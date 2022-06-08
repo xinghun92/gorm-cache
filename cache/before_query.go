@@ -22,7 +22,7 @@ func BeforeQuery(cache *Gorm2Cache) func(db *gorm.DB) {
 		db.InstanceSet("gorm:cache:sql", sql)
 		db.InstanceSet("gorm:cache:vars", db.Statement.Vars)
 
-		if util.ShouldCache(tableName, cache.Config.Tables) {
+		if util.ShouldCache(tableName, cache.Config.Tables) && util.ShouldCacheQuery(sql) {
 
 			if cache.Config.CacheLevel == config.CacheLevelAll || cache.Config.CacheLevel == config.CacheLevelOnlySearch {
 				keyExists, err := cache.SearchKeyExists(ctx, tableName, sql, db.Statement.Vars...)
