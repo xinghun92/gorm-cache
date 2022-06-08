@@ -106,6 +106,10 @@ func AfterQuery(cache *Gorm2Cache) func(db *gorm.DB) {
 			}
 			cache.Logger.CtxInfo(ctx, "[AfterQuery] get value: %s", cacheValue)
 			err = json.Unmarshal([]byte(cacheValue), db.Statement.Dest)
+			if isCount(sql) {
+				db.RowsAffected = 1
+			}
+
 			if err != nil {
 				cache.Logger.CtxError(ctx, "[AfterQuery] unmarshal search cache error: %v", err)
 				db.Error = util.ErrCacheUnmarshal
@@ -156,4 +160,8 @@ func AfterQuery(cache *Gorm2Cache) func(db *gorm.DB) {
 			return
 		}
 	}
+}
+
+func isCount(sql string) bool {
+	return strings.Contains(sql, `count(`) || strings.Contains(sql, "COUNT(")
 }
